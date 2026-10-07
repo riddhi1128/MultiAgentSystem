@@ -1,0 +1,2273 @@
+{
+  "name": "Mastery Desk",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mastery-desk",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "5fe10706-6b5e-426c-9d1a-10e9bc82cad3",
+      "name": "Receive Tool Call",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        80
+      ],
+      "webhookId": "2d9ff04f-8515-4cca-8f4e-ea9a6403f559",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "tX7tEJdn4lhdTUlI",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst toolCall = item.body.message.toolCalls[0];\nlet args = toolCall.function.arguments;\nif (typeof args === \"string\") { args = JSON.parse(args); }\nconst name = String(args.name || args.fullName || '').trim();\nconst firstName = name.split(/\\s+/)[0] || 'there';\nconst confirmation = \"Thanks \" + firstName + \", you are all set. Your practice session is booked and your personal learning plan is on its way to your inbox.\";\nreturn [{\n  json: {\n    name,\n    email: String(args.email || '').trim().toLowerCase(),\n    skill: String(args.skill || ''),\n    level: String(args.level || ''),\n    hoursPerWeek: Number(args.hoursPerWeek || args.hours_per_week || 0),\n    sessionDateTime: String(args.sessionDateTime || args.datetime || ''),\n    confirmation\n  }\n}];"
+      },
+      "id": "b2dce13b-dedd-485b-9e44-3eccc380cb28",
+      "name": "Unpack Caller Details",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qi9X0lYV6LS35ASDk5L224KJ2E0Tbnflp2a8NQgZEKU",
+          "mode": "list",
+          "cachedResultName": "Mastery Desk",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qi9X0lYV6LS35ASDk5L224KJ2E0Tbnflp2a8NQgZEKU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qi9X0lYV6LS35ASDk5L224KJ2E0Tbnflp2a8NQgZEKU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Skill",
+              "displayName": "Skill",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Level",
+              "displayName": "Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hours",
+              "displayName": "Hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Session",
+              "displayName": "Session",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stage",
+              "displayName": "Stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Weeks",
+              "displayName": "Weeks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "808e3185-1fd1-4d9e-9519-da71017dde92",
+      "name": "Add Caller to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        176
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4eJu8ktsLgwN6l0e",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"results\":[{\"toolCallId\":\"{{ $('Receive Tool Call').item.json.body.message.toolCallList[0].id }}\",\"result\":\"Session booked. Your learning plan will arrive by email shortly.\"}]}",
+        "options": {}
+      },
+      "id": "1db20101-1345-4e73-bce3-3a497e5502d9",
+      "name": "Reply to Voice Agent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        944,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"Write a personalised learning plan for this caller.\\n\" + \"\\nName: \" + $(\"Unpack Caller Details\").item.json.name + \"\\nSkill they want to master: \" + $(\"Unpack Caller Details\").item.json.skill + \"\\nHow far along they already are: \" + $(\"Unpack Caller Details\").item.json.level + \"\\nHours per week they can commit: \" + $(\"Unpack Caller Details\").item.json.hoursPerWeek + \"\\nTheir booked 30 minute practice session: \" + $(\"Unpack Caller Details\").item.json.sessionDateTime }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a learning coach at Mastery Desk. Write warm, realistic, specific learning plans. Judge the stage honestly: beginner (just starting), improver (has momentum), or stuck (has plateaued). The number of weeks must be realistic for the stated skill, level and weekly hours. Recommend three free, real, currently available resources with working URLs (prefer well-known sites, official docs, YouTube channels or free courses). Return only the structured output requested by the parser."
+        }
+      },
+      "id": "e441df69-cff3-401b-80e4-bde6032ebb97",
+      "name": "Write Learning Plan",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        64
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 4096,
+          "temperature": 0.5
+        }
+      },
+      "id": "e9573cdf-653a-42fd-a907-220fef5ac518",
+      "name": "Gemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        1296,
+        288
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "Gateway credits",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const caller = $(\"Unpack Caller Details\").first().json;\nconst plan = $input.first().json.output;\n\nfunction esc(v) {\n  return String(v == null ? \"\" : v)\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\")\n    .replace(/\"/g, \"&quot;\")\n    .replace(/'/g, \"&#39;\");\n}\n\nconst stage = String(plan.stage || \"beginner\").toLowerCase();\nconst badgeColors = { beginner: \"#2A7A4F\", improver: \"#B8923A\", stuck: \"#B5481F\" };\nconst badge = badgeColors[stage] || badgeColors.beginner;\nconst weeks = Number(plan.weeks) || 4;\nconst pct = Math.min(100, Math.round((4 / weeks) * 100));\n\nlet sessionNice = esc(caller.sessionDateTime);\ntry {\n  sessionNice = new Date(caller.sessionDateTime).toLocaleString(\"en-US\", { timeZone: \"Asia/Kolkata\", weekday: \"long\", month: \"long\", day: \"numeric\", hour: \"numeric\", minute: \"2-digit\" });\n  sessionNice = esc(sessionNice);\n} catch (e) {}\n\nconst weekLabels = [\"Week 1\", \"Week 2\", \"Week 3\", \"Week 4\"];\nlet weekCards = \"\";\nfor (let i = 0; i < 4; i++) {\n  const action = esc(plan.weekActions[i] || \"\");\n  weekCards +=\n    '<tr><td style=\"padding:0 24px 12px 24px;\">' +\n    '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#ffffff;border-radius:12px;\">' +\n    '<tr>' +\n    '<td width=\"48\" valign=\"top\" style=\"padding:16px 0 16px 16px;\">' +\n    '<div style=\"width:36px;height:36px;border-radius:18px;background-color:#004830;color:#C8F135;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;line-height:36px;text-align:center;\">' + (i + 1) + '</div>' +\n    '</td>' +\n    '<td valign=\"top\" style=\"padding:16px 16px 16px 8px;\">' +\n    '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#5A6B61;padding-bottom:4px;\">' + weekLabels[i] + '</div>' +\n    '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;color:#0E1A14;\">' + action + '</div>' +\n    '</td>' +\n    '</tr></table></td></tr>';\n}\n\nlet resourceCards = \"\";\nfor (let j = 0; j < plan.resources.length; j++) {\n  const r = plan.resources[j];\n  resourceCards +=\n    '<tr><td style=\"padding:0 24px 12px 24px;\">' +\n    '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#ffffff;border-radius:12px;\">' +\n    '<tr><td style=\"padding:16px;\">' +\n    '<a href=\"' + esc(r.url) + '\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#004830;text-decoration:underline;\">' + esc(r.name) + '</a>' +\n    '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;color:#5A6B61;padding-top:4px;\">' + esc(r.description) + '</div>' +\n    '</td></tr></table></td></tr>';\n}\n\nconst html =\n  '<!DOCTYPE html>' +\n  '<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">' +\n  '<head>' +\n  '<meta charset=\"utf-8\" />' +\n  '<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />' +\n  '<meta name=\"color-scheme\" content=\"light dark\" />' +\n  '<meta name=\"supported-color-schemes\" content=\"light dark\" />' +\n  '<title>' + esc(plan.headline) + '</title>' +\n  '<style>' +\n  '@media only screen and (max-width:620px){' +\n  '  .container{width:100% !important;max-width:100% !important;}' +\n  '  .stat-td{display:block !important;width:100% !important;padding:8px 24px !important;}' +\n  '  .px{padding-left:16px !important;padding-right:16px !important;}' +\n  '}' +\n  '@media (prefers-color-scheme: dark){' +\n  '  .page-bg{background-color:#0E1A14 !important;}' +\n  '  .card{background-color:#16241D !important;}' +\n  '  .text-main{color:#F4F5F0 !important;}' +\n  '  .text-sub{color:#9FB0A6 !important;}' +\n  '}' +\n  '</style>' +\n  '</head>' +\n  '<body style=\"margin:0;padding:0;\">' +\n  '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"page-bg\" style=\"background-color:#F4F5F0;\">' +\n  '<tr><td align=\"center\" style=\"padding:24px 12px;\">' +\n  '<table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"container\" style=\"width:600px;max-width:600px;border-radius:16px;overflow:hidden;\">' +\n\n  '<tr><td class=\"px\" style=\"background-color:#004830;padding:32px 24px;\">' +\n  '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">' +\n  '<tr>' +\n  '<td style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#C8F135;\">' + esc(caller.skill) + '</td>' +\n  '<td align=\"right\"><span style=\"display:inline-block;background-color:' + badge + ';color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:999px;\">' + esc(stage) + '</span></td>' +\n  '</tr></table>' +\n  '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:30px;line-height:38px;font-weight:bold;color:#ffffff;padding-top:16px;\">' + esc(plan.headline) + '</div>' +\n  '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;color:#C8F135;padding-top:10px;\">One step a week, ' + esc(caller.name.split(/\\s+/)[0]) + ' — that is all this asks of you.</div>' +\n  '</td></tr>' +\n\n  '<tr><td class=\"card px\" style=\"background-color:#ffffff;padding:20px 24px;\">' +\n  '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">' +\n  '<tr>' +\n  '<td class=\"stat-td\" width=\"33%\" align=\"center\" style=\"padding:8px;\">' +\n  '<div class=\"text-main\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:bold;color:#0E1A14;\">' + weeks + '</div>' +\n  '<div class=\"text-sub\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#5A6B61;padding-top:4px;\">weeks</div>' +\n  '</td>' +\n  '<td class=\"stat-td\" width=\"33%\" align=\"center\" style=\"padding:8px;\">' +\n  '<div class=\"text-main\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:bold;color:#0E1A14;\">' + esc(caller.hoursPerWeek) + '</div>' +\n  '<div class=\"text-sub\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#5A6B61;padding-top:4px;\">hours a week</div>' +\n  '</td>' +\n  '<td class=\"stat-td\" width=\"33%\" align=\"center\" style=\"padding:8px;\">' +\n  '<div class=\"text-main\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:bold;color:#0E1A14;\">1</div>' +\n  '<div class=\"text-sub\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#5A6B61;padding-top:4px;\">session booked</div>' +\n  '</td>' +\n  '</tr></table></td></tr>' +\n\n  '<tr><td class=\"card px\" style=\"background-color:#ffffff;padding:0 24px 20px 24px;\">' +\n  '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">' +\n  '<tr><td style=\"background-color:#F4F5F0;border-radius:999px;height:8px;font-size:0;line-height:0;\">' +\n  '<div style=\"background-color:#C8F135;width:' + pct + '%;height:8px;border-radius:999px;font-size:0;line-height:0;\">&nbsp;</div>' +\n  '</td></tr></table>' +\n  '<div class=\"text-sub\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#5A6B61;padding-top:8px;\">The first four weeks below cover ' + pct + '% of the whole plan.</div>' +\n  '</td></tr>' +\n\n  '<tr><td class=\"card px\" style=\"background-color:#ffffff;padding:0 24px 24px 24px;\">' +\n  '<div class=\"text-main\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#0E1A14;\">' + esc(plan.intro) + '</div>' +\n  '</td></tr>' +\n\n  '<tr><td class=\"page-bg\" style=\"background-color:#F4F5F0;padding:8px 0 0 0;font-size:0;line-height:0;\">&nbsp;</td></tr>' +\n  weekCards +\n\n  '<tr><td class=\"px\" style=\"padding:12px 24px 4px 24px;\">' +\n  '<div class=\"text-main\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#0E1A14;\">Three free resources</div>' +\n  '</td></tr>' +\n  resourceCards +\n\n  '<tr><td style=\"padding:12px 24px 24px 24px;\">' +\n  '<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#004830;border-radius:12px;\">' +\n  '<tr><td style=\"padding:20px;\">' +\n  '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#C8F135;padding-bottom:8px;\">Your booked session · ' + sessionNice + '</div>' +\n  '<div style=\"font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;color:#ffffff;\">' + esc(plan.sessionLine) + '</div>' +\n  '</td></tr></table></td></tr>' +\n\n  '<tr><td align=\"center\" style=\"padding:8px 24px 28px 24px;\">' +\n  '<div class=\"text-sub\" style=\"font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#5A6B61;\">Team Mastery Desk</div>' +\n  '</td></tr>' +\n\n  '</table></td></tr></table>' +\n  '</body></html>';\n\nreturn [{ json: { html: html, subject: \"Your Mastery Desk plan: \" + esc(plan.headline) } }];"
+      },
+      "id": "15f23224-9f3b-493c-86c6-15446e1fa7d4",
+      "name": "Build Email HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $(\"Unpack Caller Details\").item.json.email }}",
+        "subject": "={{ \"Your Mastery Desk plan is here, \" + $(\"Unpack Caller Details\").item.json.name.split(\" \")[0] }}",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Mastery Desk"
+        }
+      },
+      "id": "b7db00d7-094e-49d8-a771-a6e3da3e0fc8",
+      "name": "Send Plan Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        64
+      ],
+      "webhookId": "867202d6-6905-4fff-a55d-b0e75fb07b14",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZJVRiZ8yGxBhSZ7n",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "riddhiii1128@gmail.com",
+          "mode": "list",
+          "cachedResultName": "riddhiii1128@gmail.com"
+        },
+        "start": "={{ $('Unpack Caller Details').item.json.sessionDateTime }}",
+        "end": "={{ DateTime.fromISO($('Unpack Caller Details').item.json.sessionDateTime).plus({minutes: 30}).toISO() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Unpack Caller Details').item.json.email }}"
+          ],
+          "description": "={{ \"30 minute practice session on \" + $('Unpack Caller Details').item.json.skill + \" with \" + $('Unpack Caller Details').item.json.name }}",
+          "summary": "={{ \"Practice session: \" + $('Unpack Caller Details').item.json.skill }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        176
+      ],
+      "id": "5a72ced6-dff9-4222-94b4-356a59b76219",
+      "name": "Book Practice Session",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3BrFQx3MC2mjLPcG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"stage\": { \"type\": \"string\", \"enum\": [\"beginner\", \"improver\", \"stuck\"] },\n    \"weeks\": { \"type\": \"number\" },\n    \"headline\": { \"type\": \"string\" },\n    \"intro\": { \"type\": \"string\" },\n    \"weekActions\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"minItems\": 4,\n      \"maxItems\": 4\n    },\n    \"resources\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"name\": { \"type\": \"string\" },\n          \"url\": { \"type\": \"string\" },\n          \"description\": { \"type\": \"string\" }\n        },\n        \"required\": [\"name\", \"url\", \"description\"]\n      },\n      \"minItems\": 3,\n      \"maxItems\": 3\n    },\n    \"sessionLine\": { \"type\": \"string\" }\n  },\n  \"required\": [\"stage\", \"weeks\", \"headline\", \"intro\", \"weekActions\", \"resources\", \"sessionLine\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1424,
+        240
+      ],
+      "id": "59be3649-106a-4e6a-8e3b-711ebb26e6c2",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {
+    "Receive Tool Call": [
+      {
+        "json": {
+          "headers": {
+            "host": "riddhiiii.app.n8n.cloud",
+            "user-agent": "axios/1.19.0",
+            "content-length": "37817",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "authentication": "BearerRiddhi_12",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "16.148.73.178",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "a463d11a7bfca096-PDX",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "cookie": "callId=01a110a4-68e9-7227-a073-51c553ff345c",
+            "x-call-id": "01a110a4-68e9-7227-a073-51c553ff345c",
+            "x-forwarded-for": "16.148.73.178, 104.23.160.66",
+            "x-forwarded-host": "riddhiiii.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-26-59cd5b855d-gl2v9",
+            "x-is-trusted": "yes",
+            "x-real-ip": "16.148.73.178",
+            "x-vapi-secret": ""
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": {
+              "timestamp": 1791280802784,
+              "type": "tool-calls",
+              "toolCalls": [
+                {
+                  "id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                  "type": "function",
+                  "function": {
+                    "name": "save_and_book",
+                    "arguments": {
+                      "name": "Riddhi Bhatt",
+                      "email": "riddhiii1128@gmail.com",
+                      "skill": "Swimming",
+                      "level": "tried a bit",
+                      "hoursPerWeek": 10,
+                      "sessionDateTime": "2026-10-08T17:00:00+05:30"
+                    }
+                  }
+                }
+              ],
+              "toolCallList": [
+                {
+                  "id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                  "type": "function",
+                  "function": {
+                    "name": "save_and_book",
+                    "arguments": {
+                      "name": "Riddhi Bhatt",
+                      "email": "riddhiii1128@gmail.com",
+                      "skill": "Swimming",
+                      "level": "tried a bit",
+                      "hoursPerWeek": 10,
+                      "sessionDateTime": "2026-10-08T17:00:00+05:30"
+                    }
+                  }
+                }
+              ],
+              "toolWithToolCallList": [
+                {
+                  "type": "function",
+                  "function": {
+                    "name": "save_and_book",
+                    "parameters": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "email",
+                        "skill",
+                        "sessionDateTime",
+                        "hoursPerWeek",
+                        "level"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "default": "",
+                          "description": "Caller's full name"
+                        },
+                        "email": {
+                          "type": "string",
+                          "default": "",
+                          "description": "Caller's confirmed email address, like priya@gmail.com"
+                        },
+                        "level": {
+                          "type": "string",
+                          "default": "",
+                          "description": "One of: never started, tried a bit, okay but stuck"
+                        },
+                        "skill": {
+                          "type": "string",
+                          "default": "",
+                          "description": "The skill the caller wants to learn"
+                        },
+                        "hoursPerWeek": {
+                          "type": "number",
+                          "default": "",
+                          "description": "Hours per week the caller can give, as a number"
+                        },
+                        "sessionDateTime": {
+                          "type": "string",
+                          "default": "",
+                          "description": "\tSession start in ISO 8601 with +05:30 offset, e.g. 2026-10-08T19:00:00+05:30"
+                        }
+                      }
+                    },
+                    "description": "Saves the caller and books their first 30 minute practice session. Call once, at the end, after they have confirmed their email and a day and time."
+                  },
+                  "server": {
+                    "url": "https://riddhiiii.app.n8n.cloud/webhook/mastery-desk",
+                    "headers": {
+                      "Authentication": "BearerRiddhi_12"
+                    },
+                    "timeoutSeconds": 20,
+                    "staticIpAddressesEnabled": false
+                  },
+                  "messages": [
+                    {
+                      "type": "request-start",
+                      "contents": [],
+                      "conditions": [],
+                      "blocking": false
+                    }
+                  ],
+                  "variableExtractionPlan": {
+                    "schema": {
+                      "type": "object",
+                      "required": [],
+                      "properties": {}
+                    }
+                  },
+                  "toolCall": {
+                    "id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                    "type": "function",
+                    "function": {
+                      "name": "save_and_book",
+                      "arguments": {
+                        "name": "Riddhi Bhatt",
+                        "email": "riddhiii1128@gmail.com",
+                        "skill": "Swimming",
+                        "level": "tried a bit",
+                        "hoursPerWeek": 10,
+                        "sessionDateTime": "2026-10-08T17:00:00+05:30"
+                      }
+                    }
+                  }
+                }
+              ],
+              "artifact": {
+                "messages": [
+                  {
+                    "role": "system",
+                    "message": "[IDENTITY]\nYou are Riya, an AI skill coach at the Mastery Desk. You help anyone who calls turn a skill they keep postponing into a real plan, whatever their background or job.\n\n[CONTEXT]\nRight now it is Tuesday, 06 October 2026, 03:26 PM India time.\nToday's date is 2026-10-06.\nPractice sessions are 30 minutes and can be booked any day between 7 am and 10 pm India time.\nYou have one tool, save_and_book. It saves the caller and books their session in one step.\n\n[TASK]\n1. Ask which skill they want to get good at. Accept anything.\n2. Ask where they are with it: never started, tried a bit, or okay but stuck.\n3. Ask how many hours a week they can realistically give. If the number is big, ask once if it holds on a busy week, and take the second answer.\n4. Ask which day and time this week they can genuinely sit down for 30 minutes.\n5. Work out the exact calendar date from today's date. Say it back in words, like \"Thursday, 8 October at 7 pm. Right?\" Get a yes.\n6. Ask for their full name.\n7. As...",
+                    "time": 1791280572859,
+                    "secondsFromStart": 0
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Hi. This is Zahir from the mastery desk. Which skill do you wanna get good at?",
+                    "time": 1791280574656,
+                    "endTime": 1791280579136,
+                    "secondsFromStart": 1.68,
+                    "duration": 3760,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Swimming",
+                    "time": 1791280581656,
+                    "endTime": 1791280581976,
+                    "secondsFromStart": 8.68,
+                    "duration": 320,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "swimming",
+                          "start": 8.68,
+                          "end": 9,
+                          "confidence": 0.7373047,
+                          "punctuated_word": "Swimming"
+                        }
+                      ]
+                    },
+                    "confidence": 0.7373047,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Great choice. Where are you with swimming now? Never started, tried a bit, or okay but stuck?",
+                    "time": 1791280585166.001,
+                    "endTime": 1791280591906,
+                    "secondsFromStart": 12.1900009765625,
+                    "duration": 5519.9990234375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Power started.",
+                    "time": 1791280593826,
+                    "endTime": 1791280594786.001,
+                    "secondsFromStart": 20.85,
+                    "duration": 960.0009765625,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "power",
+                          "start": 20.85,
+                          "end": 21.33,
+                          "confidence": 0.24291992,
+                          "punctuated_word": "Power"
+                        },
+                        {
+                          "word": "started",
+                          "start": 21.33,
+                          "end": 21.810001,
+                          "confidence": 0.82958984,
+                          "punctuated_word": "started."
+                        }
+                      ]
+                    },
+                    "confidence": 0.82958984,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thanks for sharing. How many hour a week can you realistically give to practice?",
+                    "time": 1791280596326,
+                    "endTime": 1791280601806,
+                    "secondsFromStart": 23.35,
+                    "duration": 4240,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "10 hours.",
+                    "time": 1791280604266,
+                    "endTime": 1791280604986,
+                    "secondsFromStart": 31.29,
+                    "duration": 720,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "10",
+                          "start": 31.29,
+                          "end": 31.69,
+                          "confidence": 0.671875,
+                          "punctuated_word": "10"
+                        },
+                        {
+                          "word": "hours",
+                          "start": 31.69,
+                          "end": 32.01,
+                          "confidence": 0.79907227,
+                          "punctuated_word": "hours."
+                        }
+                      ]
+                    },
+                    "confidence": 0.79907227,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "That's a solid number. If you have a busy week, will you still manage 10 hours, or would it be less?",
+                    "time": 1791280606146,
+                    "endTime": 1791280611875.998,
+                    "secondsFromStart": 33.17,
+                    "duration": 5439.99609375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "I can manage 10 hours.",
+                    "time": 1791280614416,
+                    "endTime": 1791280616176,
+                    "secondsFromStart": 41.44,
+                    "duration": 1760,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "i",
+                          "start": 41.44,
+                          "end": 41.76,
+                          "confidence": 0.9838867,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "can",
+                          "start": 41.76,
+                          "end": 42,
+                          "confidence": 1,
+                          "punctuated_word": "can"
+                        },
+                        {
+                          "word": "manage",
+                          "start": 42,
+                          "end": 42.48,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "manage"
+                        },
+                        {
+                          "word": "10",
+                          "start": 42.48,
+                          "end": 42.88,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "10"
+                        },
+                        {
+                          "word": "hours",
+                          "start": 42.88,
+                          "end": 43.2,
+                          "confidence": 0.72961426,
+                          "punctuated_word": "hours."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9980469,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Awesome. Which day and time this week can you genuinely sit down for a 30 minute session? Any slot between 7 AM and 10 PM works.",
+                    "time": 1791280618026,
+                    "endTime": 1791280626136.004,
+                    "secondsFromStart": 45.05,
+                    "duration": 7440.0009765625,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Eighth October.",
+                    "time": 1791280629696,
+                    "endTime": 1791280630736.002,
+                    "secondsFromStart": 56.72,
+                    "duration": 1040.001953125,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "eighth",
+                          "start": 56.72,
+                          "end": 57.120003,
+                          "confidence": 0.88305664,
+                          "punctuated_word": "Eighth"
+                        },
+                        {
+                          "word": "october",
+                          "start": 57.120003,
+                          "end": 57.760002,
+                          "confidence": 0.68933105,
+                          "punctuated_word": "October."
+                        }
+                      ]
+                    },
+                    "confidence": 0.88305664,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Sure. What time on Thursday 8 October, works best for you? Anytime between 7 AM and 10 PM.",
+                    "time": 1791280632236.002,
+                    "endTime": 1791280638656,
+                    "secondsFromStart": 59.260001953125,
+                    "duration": 6160,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "5 PM.",
+                    "time": 1791280640216,
+                    "endTime": 1791280641095.995,
+                    "secondsFromStart": 67.24,
+                    "duration": 879.9951171875,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "5",
+                          "start": 67.24,
+                          "end": 67.64,
+                          "confidence": 0.84228516,
+                          "punctuated_word": "5"
+                        },
+                        {
+                          "word": "pm",
+                          "start": 67.64,
+                          "end": 68.119995,
+                          "confidence": 0.8820801,
+                          "punctuated_word": "PM."
+                        }
+                      ]
+                    },
+                    "confidence": 0.8820801,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Perfect. So Thursday, 8 October at 5 PM. Right?",
+                    "time": 1791280642536,
+                    "endTime": 1791280646455.996,
+                    "secondsFromStart": 69.56,
+                    "duration": 3919.99609375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Yes.",
+                    "time": 1791280648536.005,
+                    "endTime": 1791280648856.005,
+                    "secondsFromStart": 75.5600048828125,
+                    "duration": 320,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "yes",
+                          "start": 75.560005,
+                          "end": 75.880005,
+                          "confidence": 0.97436523,
+                          "punctuated_word": "Yes."
+                        }
+                      ]
+                    },
+                    "confidence": 0.97436523,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Great. May I have your full name, please?",
+                    "time": 1791280650186.01,
+                    "endTime": 1791280652346,
+                    "secondsFromStart": 77.21001000976563,
+                    "duration": 2159.989990234375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Riti Bhatt.",
+                    "time": 1791280654646,
+                    "endTime": 1791280656116,
+                    "secondsFromStart": 81.67,
+                    "duration": 1120,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "riti",
+                          "start": 81.67,
+                          "end": 82.31,
+                          "confidence": 0.45593262,
+                          "punctuated_word": "Riti"
+                        },
+                        {
+                          "word": "bhatt",
+                          "start": 82.66,
+                          "end": 83.14,
+                          "confidence": 0.61865234,
+                          "punctuated_word": "Bhatt."
+                        }
+                      ]
+                    },
+                    "confidence": 0.45593262,
+                    "confidenceSource": "derived"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thank you, Riti. Could you please spell your email slowly? Saying at and dot?",
+                    "time": 1791280657476,
+                    "endTime": 1791280663066.004,
+                    "secondsFromStart": 84.5,
+                    "duration": 5120.00390625,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "This is not my name. This is not my name. My name is r I d d h I, Bhatt.",
+                    "time": 1791280662846,
+                    "endTime": 1791280670095.995,
+                    "secondsFromStart": 89.87,
+                    "duration": 6719.9951171875,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "this",
+                          "start": 89.87,
+                          "end": 90.19,
+                          "confidence": 0.8720703,
+                          "punctuated_word": "This"
+                        },
+                        {
+                          "word": "is",
+                          "start": 90.58,
+                          "end": 90.82,
+                          "confidence": 0.99609375,
+                          "punctuated_word": "is"
+                        },
+                        {
+                          "word": "not",
+                          "start": 90.82,
+                          "end": 91.14,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "not"
+                        },
+                        {
+                          "word": "my",
+                          "start": 91.14,
+                          "end": 91.380005,
+                          "confidence": 1,
+                          "punctuated_word": "my"
+                        },
+                        {
+                          "word": "name",
+                          "start": 91.380005,
+                          "end": 91.78,
+                          "confidence": 0.9995117,
+                          "punctuated_word": "name."
+                        },
+                        {
+                          "word": "this",
+                          "start": 91.78,
+                          "end": 92.020004,
+                          "confidence": 1,
+                          "punctuated_word": "This"
+                        },
+                        {
+                          "word": "is",
+                          "start": 92.020004,
+                          "end": 92.18,
+                          "confidence": 1,
+                          "punctuated_word": "is"
+                        },
+                        {
+                          "word": "not",
+                          "start": 92.18,
+                          "end": 92.42,
+                          "confidence": 1,
+                          "punctuated_word": "not"
+                        },
+                        {
+                          "word": "my",
+                          "start": 92.42,
+                          "end": 92.66,
+                          "confidence": 1,
+                          "punctuated_word": "my"
+                        },
+                        {
+                          "word": "name",
+                          "start": 92.66,
+                          "end": 92.98,
+                          "confidence": 1,
+                          "punctuated_word": "name."
+                        },
+                        {
+                          "word": "my",
+                          "start": 92.98,
+                          "end": 93.14,
+                          "confidence": 1,
+                          "punctuated_word": "My"
+                        },
+                        {
+                          "word": "name",
+                          "start": 93.14,
+                          "end": 93.3,
+                          "confidence": 1,
+                          "punctuated_word": "name"
+                        },
+                        {
+                          "word": "is",
+                          "start": 93.3,
+                          "end": 93.46,
+                          "confidence": 0.9951172,
+                          "punctuated_word": "is"
+                        },
+                        {
+                          "word": "r",
+                          "start": 93.6,
+                          "end": 94.32,
+                          "confidence": 0.98291016,
+                          "punctuated_word": "r"
+                        },
+                        {
+                          "word": "i",
+                          "start": 94.32,
+                          "end": 94.799995,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "d",
+                          "start": 94.799995,
+                          "end": 95.119995,
+                          "confidence": 0.9970703,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "d",
+                          "start": 95.119995,
+                          "end": 95.68,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "h",
+                          "start": 95.68,
+                          "end": 96.159996,
+                          "confidence": 0.99609375,
+                          "punctuated_word": "h"
+                        },
+                        {
+                          "word": "i",
+                          "start": 96.159996,
+                          "end": 96.72,
+                          "confidence": 0.8630371,
+                          "punctuated_word": "I,"
+                        },
+                        {
+                          "word": "bhatt",
+                          "start": 96.72,
+                          "end": 97.119995,
+                          "confidence": 0.6923828,
+                          "punctuated_word": "Bhatt."
+                        }
+                      ]
+                    },
+                    "confidence": 0.8720703,
+                    "confidenceSource": "derived"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thank you for correcting. Ritty Butt. Please spell your email slowly saying at and dot.",
+                    "time": 1791280671186,
+                    "endTime": 1791280677296,
+                    "secondsFromStart": 98.21,
+                    "duration": 5360,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "My email is r I d d h I 1 No. That's not my email. Can we restart?",
+                    "time": 1791280680246,
+                    "endTime": 1791280690586,
+                    "secondsFromStart": 107.27,
+                    "duration": 6479.990234375,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "my",
+                          "start": 107.27,
+                          "end": 107.59,
+                          "confidence": 0.90478516,
+                          "punctuated_word": "My"
+                        },
+                        {
+                          "word": "email",
+                          "start": 107.59,
+                          "end": 107.99,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "email"
+                        },
+                        {
+                          "word": "is",
+                          "start": 107.99,
+                          "end": 108.31,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "is"
+                        },
+                        {
+                          "word": "r",
+                          "start": 108.8,
+                          "end": 109.28,
+                          "confidence": 0.94970703,
+                          "punctuated_word": "r"
+                        },
+                        {
+                          "word": "i",
+                          "start": 109.77,
+                          "end": 110.409996,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "d",
+                          "start": 110.409996,
+                          "end": 110.81,
+                          "confidence": 0.9614258,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "d",
+                          "start": 111.11,
+                          "end": 111.51,
+                          "confidence": 0.99316406,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "h",
+                          "start": 112.04,
+                          "end": 112.52,
+                          "confidence": 0.984375,
+                          "punctuated_word": "h"
+                        },
+                        {
+                          "word": "i",
+                          "start": 112.86,
+                          "end": 113.26,
+                          "confidence": 0.9970703,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "1",
+                          "start": 113.56,
+                          "end": 114.119995,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "1"
+                        },
+                        {
+                          "word": "no",
+                          "start": 115.15,
+                          "end": 115.549995,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "No."
+                        },
+                        {
+                          "word": "that's",
+                          "start": 115.549995,
+                          "end": 115.869995,
+                          "confidence": 0.99658203,
+                          "punctuated_word": "That's"
+                        },
+                        {
+                          "word": "not",
+                          "start": 115.869995,
+                          "end": 116.03,
+                          "confidence": 0.83251953,
+                          "punctuated_word": "not"
+                        },
+                        {
+                          "word": "my",
+                          "start": 116.03,
+                          "end": 116.189995,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "my"
+                        },
+                        {
+                          "word": "email",
+                          "start": 116.189995,
+                          "end": 116.43,
+                          "confidence": 0.9941406,
+                          "punctuated_word": "email."
+                        },
+                        {
+                          "word": "can",
+                          "start": 116.810005,
+                          "end": 117.130005,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "Can"
+                        },
+                        {
+                          "word": "we",
+                          "start": 117.130005,
+                          "end": 117.21,
+                          "confidence": 0.99316406,
+                          "punctuated_word": "we"
+                        },
+                        {
+                          "word": "restart",
+                          "start": 117.21,
+                          "end": 117.61,
+                          "confidence": 0.97265625,
+                          "punctuated_word": "restart?"
+                        }
+                      ]
+                    },
+                    "confidence": 0.94970703,
+                    "confidenceSource": "derived"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Of course, we can restart. Let's begin again. Skill do you want to get good at?",
+                    "time": 1791280691646,
+                    "endTime": 1791280695996,
+                    "secondsFromStart": 118.67,
+                    "duration": 3520,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Swimming.",
+                    "time": 1791280698576,
+                    "endTime": 1791280699216,
+                    "secondsFromStart": 125.6,
+                    "duration": 640,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "swimming",
+                          "start": 125.6,
+                          "end": 126.24,
+                          "confidence": 0.95336914,
+                          "punctuated_word": "Swimming."
+                        }
+                      ]
+                    },
+                    "confidence": 0.95336914,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Good. Where are you with swimming now? Never started, tried a bit, or okay but stuck?",
+                    "time": 1791280700476,
+                    "endTime": 1791280706336,
+                    "secondsFromStart": 127.5,
+                    "duration": 5039.989990234375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "That was.",
+                    "time": 1791280707816,
+                    "endTime": 1791280708295.99,
+                    "secondsFromStart": 134.84,
+                    "duration": 479.989990234375,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "that",
+                          "start": 134.84,
+                          "end": 135.16,
+                          "confidence": 0.9194336,
+                          "punctuated_word": "That"
+                        },
+                        {
+                          "word": "was",
+                          "start": 135.16,
+                          "end": 135.31999,
+                          "confidence": 0.5574951,
+                          "punctuated_word": "was."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9194336,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thanks. How many hours a week can you realistically give to swimming practice?",
+                    "time": 1791280710006.01,
+                    "endTime": 1791280713926.01,
+                    "secondsFromStart": 137.03001000976562,
+                    "duration": 3920,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "10 hours.",
+                    "time": 1791280716226,
+                    "endTime": 1791280717025.99,
+                    "secondsFromStart": 143.25,
+                    "duration": 799.989990234375,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "10",
+                          "start": 143.25,
+                          "end": 143.65,
+                          "confidence": 0.5913086,
+                          "punctuated_word": "10"
+                        },
+                        {
+                          "word": "hours",
+                          "start": 143.65,
+                          "end": 144.04999,
+                          "confidence": 0.7561035,
+                          "punctuated_word": "hours."
+                        }
+                      ]
+                    },
+                    "confidence": 0.7561035,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Nice. If your week gets busy, will you still manage 10 hours or would it be less?",
+                    "time": 1791280718295.99,
+                    "endTime": 1791280723106,
+                    "secondsFromStart": 145.31998999023438,
+                    "duration": 4560.010009765625,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "I can manage.",
+                    "time": 1791280724736.01,
+                    "endTime": 1791280725616,
+                    "secondsFromStart": 151.76001000976564,
+                    "duration": 879.989990234375,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "i",
+                          "start": 151.76001,
+                          "end": 152.08,
+                          "confidence": 0.9482422,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "can",
+                          "start": 152.08,
+                          "end": 152.24,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "can"
+                        },
+                        {
+                          "word": "manage",
+                          "start": 152.24,
+                          "end": 152.64,
+                          "confidence": 0.5980835,
+                          "punctuated_word": "manage."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9482422,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Great. Which day and time this week can you genuinely sit for a 30 minute session? Any slot between 7 AM and 10 PM.",
+                    "time": 1791280727575.99,
+                    "endTime": 1791280735296,
+                    "secondsFromStart": 154.59998999023438,
+                    "duration": 7360,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Thursday, 5 PM.",
+                    "time": 1791280738685.99,
+                    "endTime": 1791280739965.99,
+                    "secondsFromStart": 165.70998999023436,
+                    "duration": 1280,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "thursday",
+                          "start": 165.70999,
+                          "end": 166.43,
+                          "confidence": 0.720459,
+                          "punctuated_word": "Thursday,"
+                        },
+                        {
+                          "word": "5",
+                          "start": 166.43,
+                          "end": 166.59,
+                          "confidence": 1,
+                          "punctuated_word": "5"
+                        },
+                        {
+                          "word": "pm",
+                          "start": 166.59,
+                          "end": 166.98999,
+                          "confidence": 0.9501953,
+                          "punctuated_word": "PM."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9501953,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "So Thursday, 8 October at 5 PM. Right?",
+                    "time": 1791280741476,
+                    "endTime": 1791280745356,
+                    "secondsFromStart": 168.5,
+                    "duration": 3199.989990234375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Yes.",
+                    "time": 1791280747066,
+                    "endTime": 1791280747465.99,
+                    "secondsFromStart": 174.09,
+                    "duration": 399.989990234375,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "yes",
+                          "start": 174.09,
+                          "end": 174.48999,
+                          "confidence": 0.967041,
+                          "punctuated_word": "Yes."
+                        }
+                      ]
+                    },
+                    "confidence": 0.967041,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Perfect. May I have your full name, please?",
+                    "time": 1791280748456.01,
+                    "endTime": 1791280750866,
+                    "secondsFromStart": 175.48001000976564,
+                    "duration": 1839.97998046875,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "R I d d h I b h a t t.",
+                    "time": 1791280753546,
+                    "endTime": 1791280759576,
+                    "secondsFromStart": 180.57,
+                    "duration": 4480.010009765625,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "r",
+                          "start": 180.57,
+                          "end": 180.97,
+                          "confidence": 0.80615234,
+                          "punctuated_word": "R"
+                        },
+                        {
+                          "word": "i",
+                          "start": 180.97,
+                          "end": 181.53001,
+                          "confidence": 0.9921875,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "d",
+                          "start": 181.53001,
+                          "end": 181.85,
+                          "confidence": 0.99609375,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "d",
+                          "start": 181.85,
+                          "end": 182.33,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "h",
+                          "start": 182.33,
+                          "end": 182.73001,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "h"
+                        },
+                        {
+                          "word": "i",
+                          "start": 182.94,
+                          "end": 183.42,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "b",
+                          "start": 184.76,
+                          "end": 185.32,
+                          "confidence": 0.70703125,
+                          "punctuated_word": "b"
+                        },
+                        {
+                          "word": "h",
+                          "start": 185.32,
+                          "end": 185.72,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "h"
+                        },
+                        {
+                          "word": "a",
+                          "start": 185.72,
+                          "end": 186.04001,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "a"
+                        },
+                        {
+                          "word": "t",
+                          "start": 186.04001,
+                          "end": 186.36,
+                          "confidence": 0.9941406,
+                          "punctuated_word": "t"
+                        },
+                        {
+                          "word": "t",
+                          "start": 186.36,
+                          "end": 186.6,
+                          "confidence": 0.91015625,
+                          "punctuated_word": "t."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9941406,
+                    "confidenceSource": "derived"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Thank you. Now please spell your email slowly. Saying at and dot.",
+                    "time": 1791280760996,
+                    "endTime": 1791280766156,
+                    "secondsFromStart": 188.02,
+                    "duration": 4640.010009765625,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "R I d d h I I I 1 1 2 8 at Gmail dot com.",
+                    "time": 1791280769486,
+                    "endTime": 1791280778926.01,
+                    "secondsFromStart": 196.51,
+                    "duration": 7519.97998046875,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "r",
+                          "start": 196.51,
+                          "end": 196.99,
+                          "confidence": 0.82470703,
+                          "punctuated_word": "R"
+                        },
+                        {
+                          "word": "i",
+                          "start": 196.99,
+                          "end": 197.47,
+                          "confidence": 0.99609375,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "d",
+                          "start": 197.47,
+                          "end": 197.87,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "d",
+                          "start": 197.87,
+                          "end": 198.27,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "d"
+                        },
+                        {
+                          "word": "h",
+                          "start": 198.59,
+                          "end": 199.06999,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "h"
+                        },
+                        {
+                          "word": "i",
+                          "start": 199.37,
+                          "end": 199.93,
+                          "confidence": 1,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "i",
+                          "start": 199.93,
+                          "end": 200.40999,
+                          "confidence": 0.99902344,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "i",
+                          "start": 200.40999,
+                          "end": 200.81,
+                          "confidence": 0.9980469,
+                          "punctuated_word": "I"
+                        },
+                        {
+                          "word": "1",
+                          "start": 201.23,
+                          "end": 201.87,
+                          "confidence": 0.9921875,
+                          "punctuated_word": "1"
+                        },
+                        {
+                          "word": "1",
+                          "start": 201.87,
+                          "end": 202.26999,
+                          "confidence": 1,
+                          "punctuated_word": "1"
+                        },
+                        {
+                          "word": "2",
+                          "start": 202.26999,
+                          "end": 202.75,
+                          "confidence": 1,
+                          "punctuated_word": "2"
+                        },
+                        {
+                          "word": "8",
+                          "start": 202.75,
+                          "end": 203.06999,
+                          "confidence": 1,
+                          "punctuated_word": "8"
+                        },
+                        {
+                          "word": "at",
+                          "start": 203.95001,
+                          "end": 204.67001,
+                          "confidence": 0.99609375,
+                          "punctuated_word": "at"
+                        },
+                        {
+                          "word": "gmail",
+                          "start": 204.67001,
+                          "end": 205.15001,
+                          "confidence": 0.6875,
+                          "punctuated_word": "Gmail"
+                        },
+                        {
+                          "word": "dot",
+                          "start": 205.15001,
+                          "end": 205.71,
+                          "confidence": 1,
+                          "punctuated_word": "dot"
+                        },
+                        {
+                          "word": "com",
+                          "start": 205.71,
+                          "end": 205.95001,
+                          "confidence": 0.9875488,
+                          "punctuated_word": "com."
+                        }
+                      ]
+                    },
+                    "confidence": 0.99609375,
+                    "confidenceSource": "derived"
+                  },
+                  {
+                    "role": "bot",
+                    "message": "Let me confirm. R I d d h I I I 1 1 2 8 at gmail dot com. So that's r dash I dash d dash h dash I dash I dash I dash 1 1 2 8 at gmail dot com. Is that correct?",
+                    "time": 1791280780236,
+                    "endTime": 1791280795816,
+                    "secondsFromStart": 207.26,
+                    "duration": 14139.989990234375,
+                    "source": "",
+                    "assistantName": "zeher",
+                    "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a"
+                  },
+                  {
+                    "role": "user",
+                    "message": "Perfect.",
+                    "time": 1791280798726,
+                    "endTime": 1791280799206,
+                    "secondsFromStart": 225.75,
+                    "duration": 480,
+                    "metadata": {
+                      "wordLevelConfidence": [
+                        {
+                          "word": "perfect",
+                          "start": 225.75,
+                          "end": 226.23,
+                          "confidence": 0.9614258,
+                          "punctuated_word": "Perfect."
+                        }
+                      ]
+                    },
+                    "confidence": 0.9614258,
+                    "confidenceSource": "provider"
+                  },
+                  {
+                    "toolCalls": [
+                      {
+                        "id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                        "type": "function",
+                        "function": {
+                          "name": "save_and_book",
+                          "arguments": "{\n  \"name\": \"Riddhi Bhatt\",\n  \"email\": \"riddhiii1128@gmail.com\",\n  \"skill\": \"Swimming\",\n  \"level\": \"tried a bit\",\n  \"hoursPerWeek\": 10,\n  \"sessionDateTime\": \"2026-10-08T17:00:00+05:30\"\n}"
+                        }
+                      }
+                    ],
+                    "role": "tool_calls",
+                    "message": "",
+                    "time": 1791280802781,
+                    "secondsFromStart": 229.805
+                  }
+                ],
+                "messagesOpenAIFormatted": [
+                  {
+                    "role": "system",
+                    "content": "[IDENTITY]\nYou are Riya, an AI skill coach at the Mastery Desk. You help anyone who calls turn a skill they keep postponing into a real plan, whatever their background or job.\n\n[CONTEXT]\nRight now it is Tuesday, 06 October 2026, 03:26 PM India time.\nToday's date is 2026-10-06.\nPractice sessions are 30 minutes and can be booked any day between 7 am and 10 pm India time.\nYou have one tool, save_and_book. It saves the caller and books their session in one step.\n\n[TASK]\n1. Ask which skill they want to get good at. Accept anything.\n2. Ask where they are with it: never started, tried a bit, or okay but stuck.\n3. Ask how many hours a week they can realistically give. If the number is big, ask once if it holds on a busy week, and take the second answer.\n4. Ask which day and time this week they can genuinely sit down for 30 minutes.\n5. Work out the exact calendar date from today's date. Say it back in words, like \"Thursday, 8 October at 7 pm. Right?\" Get a yes.\n6. Ask for their full name.\n7. As..."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Hi. This is Zahir from the mastery desk. Which skill do you wanna get good at?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Swimming"
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Great choice. Where are you with swimming now? Never started, tried a bit, or okay but stuck?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Power started."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thanks for sharing. How many hour a week can you realistically give to practice?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "10 hours."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "That's a solid number. If you have a busy week, will you still manage 10 hours, or would it be less?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "I can manage 10 hours."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Awesome. Which day and time this week can you genuinely sit down for a 30 minute session? Any slot between 7 AM and 10 PM works."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Eighth October."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Sure. What time on Thursday 8 October, works best for you? Anytime between 7 AM and 10 PM."
+                  },
+                  {
+                    "role": "user",
+                    "content": "5 PM."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Perfect. So Thursday, 8 October at 5 PM. Right?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Great. May I have your full name, please?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Riti Bhatt."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thank you, Riti. Could you please spell your email slowly? Saying at and dot?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "This is not my name. This is not my name. My name is r I d d h I, Bhatt."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thank you for correcting. Ritty Butt. Please spell your email slowly saying at and dot."
+                  },
+                  {
+                    "role": "user",
+                    "content": "My email is r I d d h I 1 No. That's not my email. Can we restart?"
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Of course, we can restart. Let's begin again. Skill do you want to get good at?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Swimming."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Good. Where are you with swimming now? Never started, tried a bit, or okay but stuck?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "That was."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thanks. How many hours a week can you realistically give to swimming practice?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "10 hours."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Nice. If your week gets busy, will you still manage 10 hours or would it be less?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "I can manage."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Great. Which day and time this week can you genuinely sit for a 30 minute session? Any slot between 7 AM and 10 PM."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Thursday, 5 PM."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "So Thursday, 8 October at 5 PM. Right?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Yes."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Perfect. May I have your full name, please?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "R I d d h I b h a t t."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Thank you. Now please spell your email slowly. Saying at and dot."
+                  },
+                  {
+                    "role": "user",
+                    "content": "R I d d h I I I 1 1 2 8 at Gmail dot com."
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "Let me confirm. R I d d h I I I 1 1 2 8 at gmail dot com. So that's r dash I dash d dash h dash I dash I dash I dash 1 1 2 8 at gmail dot com. Is that correct?"
+                  },
+                  {
+                    "role": "user",
+                    "content": "Perfect."
+                  },
+                  {
+                    "role": "assistant",
+                    "tool_calls": [
+                      {
+                        "id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                        "type": "function",
+                        "function": {
+                          "name": "save_and_book",
+                          "arguments": "{\n  \"name\": \"Riddhi Bhatt\",\n  \"email\": \"riddhiii1128@gmail.com\",\n  \"skill\": \"Swimming\",\n  \"level\": \"tried a bit\",\n  \"hoursPerWeek\": 10,\n  \"sessionDateTime\": \"2026-10-08T17:00:00+05:30\"\n}"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "role": "tool",
+                    "tool_call_id": "call_VAyZgSaCWAwOQdB1qzuhMvOO",
+                    "content": "Tool Result Still Pending But Proceed Further If Possible."
+                  }
+                ],
+                "variables": {
+                  "now": "Oct 6, 2026, 9:56 AM UTC",
+                  "currentDateTime": "Tuesday, October 6, 2026 at 9:56 AM UTC",
+                  "date": "Oct 6, 2026 UTC",
+                  "time": "9:56 AM UTC",
+                  "year": "2026",
+                  "month": "October",
+                  "day": "6",
+                  "transport": {
+                    "conversationType": "voice",
+                    "provider": "daily",
+                    "videoRecordingEnabled": false,
+                    "assistantVideoEnabled": false,
+                    "roomDeleteOnUserLeaveEnabled": true,
+                    "callUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO"
+                  },
+                  "call": {
+                    "id": "01a110a4-68e9-7227-a073-51c553ff345c",
+                    "type": "webCall",
+                    "status": "queued",
+                    "createdAt": "2026-10-06T09:56:12.649Z",
+                    "transport": {
+                      "conversationType": "voice",
+                      "provider": "daily",
+                      "videoRecordingEnabled": false,
+                      "assistantVideoEnabled": false,
+                      "roomDeleteOnUserLeaveEnabled": true,
+                      "callUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO"
+                    }
+                  }
+                },
+                "variableValues": {
+                  "now": "Oct 6, 2026, 9:56 AM UTC",
+                  "currentDateTime": "Tuesday, October 6, 2026 at 9:56 AM UTC",
+                  "date": "Oct 6, 2026 UTC",
+                  "time": "9:56 AM UTC",
+                  "year": "2026",
+                  "month": "October",
+                  "day": "6",
+                  "transport": {
+                    "conversationType": "voice",
+                    "provider": "daily",
+                    "videoRecordingEnabled": false,
+                    "assistantVideoEnabled": false,
+                    "roomDeleteOnUserLeaveEnabled": true,
+                    "callUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO"
+                  },
+                  "call": {
+                    "id": "01a110a4-68e9-7227-a073-51c553ff345c",
+                    "type": "webCall",
+                    "status": "queued",
+                    "createdAt": "2026-10-06T09:56:12.649Z",
+                    "transport": {
+                      "conversationType": "voice",
+                      "provider": "daily",
+                      "videoRecordingEnabled": false,
+                      "assistantVideoEnabled": false,
+                      "roomDeleteOnUserLeaveEnabled": true,
+                      "callUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO"
+                    }
+                  }
+                }
+              },
+              "call": {
+                "id": "01a110a4-68e9-7227-a073-51c553ff345c",
+                "orgId": "a76bb69f-a037-4b5e-9a61-3f72a633c3cd",
+                "createdAt": "2026-10-06T09:56:12.649Z",
+                "updatedAt": "2026-10-06T09:56:12.649Z",
+                "type": "webCall",
+                "cost": 0,
+                "monitor": {
+                  "listenUrl": "wss://phone-call-websocket.aws-us-west-2-backend-production3.vapi.ai/01a110a4-68e9-7227-a073-51c553ff345c/listen",
+                  "controlUrl": "https://phone-call-websocket.aws-us-west-2-backend-production3.vapi.ai/01a110a4-68e9-7227-a073-51c553ff345c/control"
+                },
+                "transport": {
+                  "conversationType": "voice",
+                  "provider": "daily",
+                  "videoRecordingEnabled": false,
+                  "assistantVideoEnabled": false,
+                  "roomDeleteOnUserLeaveEnabled": true,
+                  "callUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO"
+                },
+                "webCallUrl": "https://vapi.daily.co/AfTNoZXSHveGe3QD2kyO",
+                "status": "queued",
+                "assistantId": "5e76f1f2-cf07-4060-b42e-8fbcea56071a",
+                "assistantVersion": "v8",
+                "assistantOverrides": {
+                  "name": "zeher",
+                  "model": {
+                    "model": "gpt-4.1",
+                    "toolIds": [
+                      "2154b75e-253b-411e-b91d-5149b1e07e6c"
+                    ],
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "[IDENTITY]\nYou are Riya, an AI skill coach at the Mastery Desk. You help anyone who calls turn a skill they keep postponing into a real plan, whatever their background or job.\n\n[CONTEXT]\nRight now it is {{\"now\" | date: \"%A, %d %B %Y, %I:%M %p\", \"Asia/Kolkata\"}} India time.\nToday's date is {{\"now\" | date: \"%Y-%m-%d\", \"Asia/Kolkata\"}}.\nPractice sessions are 30 minutes and can be booked any day between 7 am and 10 pm India time.\nYou have one tool, save_and_book. It saves the caller and books their session in one step.\n\n[TASK]\n1. Ask which skill they want to get good at. Accept anything.\n2. Ask where they are with it: never started, tried a bit, or okay but stuck.\n3. Ask how many hours a week they can realistically give. If the number is big, ask once if it holds on a busy week, and take the second answer.\n4. Ask which day and time this week they can genuinely sit down for 30 minutes.\n5. Work out the exact calendar date from today's date. Say it back in words, like \"Thursday, 8 October at 7 pm. Right?\" Get a yes.\n6. Ask for their full name.\n7. Ask them to spell their email slowly, saying \"at\" and \"dot\". Convert it to a real address. Read it back letter by letter, then ask if it is correct. Get a yes. If no, ask again. Never guess.\n8. Call save_and_book once, only after the date and email are both confirmed. Send: name, email, skill, level, hoursPerWeek, sessionDateTime. Send hoursPerWeek as a number, like 4. Send sessionDateTime in ISO 8601 with the India offset, like 2026-10-08T19:00:00+05:30. Never leave any field empty.\n9. Read back the tool's confirmation, tell them the plan is coming to their inbox, and close warmly.\n\n[GUARDRAILS]\nWarm, confident Indian English. Short sentences. One question at a time. Under 25 words per reply, except when reading the email back.\nIf the caller speaks Hindi, reply in simple Hinglish.\nNever read out lists or links.\nNever promise a job, a salary, a certificate or a guaranteed result.\nNever say how long mastery takes. The emailed plan covers that.\nNever book outside 7 am to 10 pm India time, and never book a time that has already passed. If they suggest one, offer the nearest valid slot.\nNever call the tool twice for the same caller.\nIf the tool fails, apologise once and say the plan will still reach their inbox."
+                      }
+                    ],
+                    "provider": "openai"
+                  },
+                  "voice": {
+                    "version": "2",
+                    "voiceId": "Clara",
+                    "provider": "vapi"
+                  },
+                  "metadata": {
+                    "preset": "balanced:1"
+                  },
+                  "transcriber": {
+                    "model": "nova-3",
+                    "language": "en-IN",
+                    "provider": "deepgram",
+                    "fallbackPlan": {
+                      "autoFallback": {
+                        "enabled": true
+                      }
+                    },
+                    "confidenceThreshold": 0.4
+                  },
+                  "analysisPlan": {
+                    "summaryPlan": {
+                      "enabled": false
+                    },
+                    "successEvaluationPlan": {
+                      "enabled": false
+                    }
+                  },
+                  "firstMessage": "Hi! This is Zeher from the Mastery Desk. Which skill do you want to get good at?",
+                  "clientMessages": [
+                    "transcript",
+                    "hang",
+                    "metadata",
+                    "tool-calls",
+                    "tool-calls-result",
+                    "tool.completed",
+                    "transfer-update",
+                    "user-interrupted",
+                    "status-update",
+                    "assistant.started"
+                  ],
+                  "endCallMessage": "Goodbye.",
+                  "variableValues": {},
+                  "voicemailMessage": "Please call back when you're available.",
+                  "startSpeakingPlan": {
+                    "smartEndpointingPlan": {
+                      "provider": "vapi"
+                    }
+                  },
+                  "backgroundDenoisingEnabled": true,
+                  "firstMessageInterruptionsEnabled": false
+                }
+              },
+              "assistant": {
+                "id": "5e76f1f2-cf07-4060-b42e-8fbcea56071a",
+                "orgId": "a76bb69f-a037-4b5e-9a61-3f72a633c3cd",
+                "name": "zeher",
+                "voice": {
+                  "version": "2",
+                  "voiceId": "Clara",
+                  "provider": "vapi"
+                },
+                "createdAt": "2026-10-04T06:13:20.244Z",
+                "updatedAt": "2026-10-06T09:05:41.828Z",
+                "model": {
+                  "model": "gpt-4.1",
+                  "toolIds": [
+                    "2154b75e-253b-411e-b91d-5149b1e07e6c"
+                  ],
+                  "messages": [
+                    {
+                      "role": "system",
+                      "content": "[IDENTITY]\nYou are Riya, an AI skill coach at the Mastery Desk. You help anyone who calls turn a skill they keep postponing into a real plan, whatever their background or job.\n\n[CONTEXT]\nRight now it is Tuesday, 06 October 2026, 03:26 PM India time.\nToday's date is 2026-10-06.\nPractice sessions are 30 minutes and can be booked any day between 7 am and 10 pm India time.\nYou have one tool, save_and_book. It saves the caller and books their session in one step.\n\n[TASK]\n1. Ask which skill they want to get good at. Accept anything.\n2. Ask where they are with it: never started, tried a bit, or okay but stuck.\n3. Ask how many hours a week they can realistically give. If the number is big, ask once if it holds on a busy week, and take the second answer.\n4. Ask which day and time this week they can genuinely sit down for 30 minutes.\n5. Work out the exact calendar date from today's date. Say it back in words, like \"Thursday, 8 October at 7 pm. Right?\" Get a yes.\n6. Ask for their full name.\n7. Ask them to spell their email slowly, saying \"at\" and \"dot\". Convert it to a real address. Read it back letter by letter, then ask if it is correct. Get a yes. If no, ask again. Never guess.\n8. Call save_and_book once, only after the date and email are both confirmed. Send: name, email, skill, level, hoursPerWeek, sessionDateTime. Send hoursPerWeek as a number, like 4. Send sessionDateTime in ISO 8601 with the India offset, like 2026-10-08T19:00:00+05:30. Never leave any field empty.\n9. Read back the tool's confirmation, tell them the plan is coming to their inbox, and close warmly.\n\n[GUARDRAILS]\nWarm, confident Indian English. Short sentences. One question at a time. Under 25 words per reply, except when reading the email back.\nIf the caller speaks Hindi, reply in simple Hinglish.\nNever read out lists or links.\nNever promise a job, a salary, a certificate or a guaranteed result.\nNever say how long mastery takes. The emailed plan covers that.\nNever book outside 7 am to 10 pm India time, and never book a time that has already passed. If they suggest one, offer the nearest valid slot.\nNever call the tool twice for the same caller.\nIf the tool fails, apologise once and say the plan will still reach their inbox."
+                    }
+                  ],
+                  "provider": "openai",
+                  "tools": [
+                    {
+                      "id": "2154b75e-253b-411e-b91d-5149b1e07e6c",
+                      "createdAt": "2026-10-04T07:06:59.304Z",
+                      "updatedAt": "2026-10-04T14:41:49.180Z",
+                      "type": "function",
+                      "function": {
+                        "name": "save_and_book",
+                        "parameters": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "email",
+                            "skill",
+                            "sessionDateTime",
+                            "hoursPerWeek",
+                            "level"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "default": "",
+                              "description": "Caller's full name"
+                            },
+                            "email": {
+                              "type": "string",
+                              "default": "",
+                              "description": "Caller's confirmed email address, like priya@gmail.com"
+                            },
+                            "level": {
+                              "type": "string",
+                              "default": "",
+                              "description": "One of: never started, tried a bit, okay but stuck"
+                            },
+                            "skill": {
+                              "type": "string",
+                              "default": "",
+                              "description": "The skill the caller wants to learn"
+                            },
+                            "hoursPerWeek": {
+                              "type": "number",
+                              "default": "",
+                              "description": "Hours per week the caller can give, as a number"
+                            },
+                            "sessionDateTime": {
+                              "type": "string",
+                              "default": "",
+                              "description": "\tSession start in ISO 8601 with +05:30 offset, e.g. 2026-10-08T19:00:00+05:30"
+                            }
+                          }
+                        },
+                        "description": "Saves the caller and books their first 30 minute practice session. Call once, at the end, after they have confirmed their email and a day and time."
+                      },
+                      "messages": [
+                        {
+                          "type": "request-start",
+                          "blocking": false
+                        }
+                      ],
+                      "orgId": "a76bb69f-a037-4b5e-9a61-3f72a633c3cd",
+                      "server": {
+                        "url": "https://riddhiiii.app.n8n.cloud/webhook/mastery-desk",
+                        "headers": {
+                          "Authentication": "BearerRiddhi_12"
+                        },
+                        "timeoutSeconds": 20,
+                        "staticIpAddressesEnabled": false
+                      },
+                      "variableExtractionPlan": {
+                        "schema": {
+                          "type": "object",
+                          "required": [],
+                          "properties": {}
+                        }
+                      },
+                      "latestVersion": "v4"
+                    }
+                  ]
+                },
+                "firstMessage": "Hi! This is Zeher from the Mastery Desk. Which skill do you want to get good at?",
+                "voicemailMessage": "Please call back when you're available.",
+                "endCallMessage": "Goodbye.",
+                "transcriber": {
+                  "model": "nova-3",
+                  "language": "en-IN",
+                  "provider": "deepgram",
+                  "fallbackPlan": {
+                    "autoFallback": {
+                      "enabled": true
+                    }
+                  },
+                  "confidenceThreshold": 0.4
+                },
+                "clientMessages": [
+                  "transcript",
+                  "hang",
+                  "metadata",
+                  "tool-calls",
+                  "tool-calls-result",
+                  "tool.completed",
+                  "transfer-update",
+                  "user-interrupted",
+                  "status-update",
+                  "assistant.started"
+                ],
+                "metadata": {
+                  "preset": "balanced:1"
+                },
+                "analysisPlan": {
+                  "summaryPlan": {
+                    "enabled": false
+                  },
+                  "successEvaluationPlan": {
+                    "enabled": false
+                  }
+                },
+                "backgroundDenoisingEnabled": true,
+                "startSpeakingPlan": {
+                  "smartEndpointingPlan": {
+                    "provider": "vapi"
+                  }
+                },
+                "firstMessageInterruptionsEnabled": false,
+                "latestVersion": "v8"
+              },
+              "assistantVersion": "v8"
+            }
+          },
+          "webhookUrl": "https://riddhiiii.app.n8n.cloud/webhook/mastery-desk",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Receive Tool Call": {
+      "main": [
+        [
+          {
+            "node": "Unpack Caller Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unpack Caller Details": {
+      "main": [
+        [
+          {
+            "node": "Add Caller to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Caller to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Book Practice Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to Voice Agent": {
+      "main": [
+        [
+          {
+            "node": "Write Learning Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Learning Plan": {
+      "main": [
+        [
+          {
+            "node": "Build Email HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Learning Plan",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email HTML": {
+      "main": [
+        [
+          {
+            "node": "Send Plan Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Book Practice Session": {
+      "main": [
+        [
+          {
+            "node": "Reply to Voice Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Write Learning Plan",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "gB8F9VEBQYHmFEAW"
+  },
+  "versionId": "6eb0f5c2-cd1e-4f35-ac1c-abf518c97ad4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0197c8ee53935bd143e563b53049cbc430557dea604548dd0e7839392981b2c5"
+  },
+  "nodeGroups": [
+    {
+      "id": "245f1022-ea2a-4a9e-b737-010ca68f370a",
+      "name": "Log and book the caller",
+      "nodeIds": [
+        "b2dce13b-dedd-485b-9e44-3eccc380cb28",
+        "808e3185-1fd1-4d9e-9519-da71017dde92"
+      ],
+      "description": "Reads the voice agent tool call, logs the caller in the sheet and books their 30 minute session with an invite"
+    },
+    {
+      "id": "28b5edad-1d80-43f1-a72e-96472bc6357b",
+      "name": "Write and send the plan",
+      "nodeIds": [
+        "1db20101-1345-4e73-bce3-3a497e5502d9",
+        "e441df69-cff3-401b-80e4-bde6032ebb97",
+        "e9573cdf-653a-42fd-a907-220fef5ac518",
+        "15f23224-9f3b-493c-86c6-15446e1fa7d4",
+        "b7db00d7-094e-49d8-a771-a6e3da3e0fc8",
+        "59be3649-106a-4e6a-8e3b-711ebb26e6c2"
+      ],
+      "description": "After the caller is answered instantly, Gemini drafts a structured learning plan and it is emailed as designed HTML"
+    }
+  ],
+  "id": "Mdr3swCaHxCT0bJU",
+  "tags": []
+}

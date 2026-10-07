@@ -1,0 +1,76 @@
+{
+  "id": "2154b75e-253b-411e-b91d-5149b1e07e6c",
+  "createdAt": "2026-10-04T07:06:59.304Z",
+  "updatedAt": "2026-10-06T10:31:46.659Z",
+  "type": "function",
+  "function": {
+    "name": "save_and_book",
+    "description": "Saves the caller and books their first 30 minute practice session. Call once, at the end, after they have confirmed their email and a day and time.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Caller's full name",
+          "type": "string",
+          "default": ""
+        },
+        "email": {
+          "description": "Caller's confirmed email address, like priya@gmail.com",
+          "type": "string",
+          "default": ""
+        },
+        "level": {
+          "description": "One of: never started, tried a bit, okay but stuck",
+          "type": "string",
+          "default": ""
+        },
+        "skill": {
+          "description": "The skill the caller wants to learn",
+          "type": "string",
+          "default": ""
+        },
+        "hoursPerWeek": {
+          "description": "Hours per week the caller can give, as a number",
+          "type": "number",
+          "default": ""
+        },
+        "sessionDateTime": {
+          "description": "\tSession start in ISO 8601 with +05:30 offset, e.g. 2026-10-08T19:00:00+05:30",
+          "type": "string",
+          "default": ""
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "skill",
+        "sessionDateTime",
+        "hoursPerWeek",
+        "level"
+      ]
+    }
+  },
+  "messages": [
+    {
+      "type": "request-start",
+      "blocking": false
+    }
+  ],
+  "orgId": "a76bb69f-a037-4b5e-9a61-3f72a633c3cd",
+  "server": {
+    "url": "https://riddhiiii.app.n8n.cloud/webhook/mastery-desk",
+    "timeoutSeconds": 20,
+    "headers": {
+      "Authentication": "Bearer ATS5bEnMwYI7v8dcZL2Jta9oWeqpHGQ0"
+    },
+    "staticIpAddressesEnabled": false
+  },
+  "variableExtractionPlan": {
+    "schema": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  },
+  "latestVersion": "v5"
+}
